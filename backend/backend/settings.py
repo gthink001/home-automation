@@ -25,8 +25,7 @@ SECRET_KEY = 'django-insecure-v9d7+-y9+zpisc)v*-)orb17s8h=6n9t84rp*j7p37q2)6d&x3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -38,40 +37,57 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.amazon',
+    'oauth2_provider',
+
+    # 'django.contrib.sites',
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.amazon',
     #'allauth.socialaccount.providers.google',
 
     "core.apps.CoreConfig"
 ]
 
-SITE_ID = 1
-
-SOCIALACCOUNT_PROVIDERS = {
-    'amazon': {
-        'SCOPE': ['profile'],
-        'AUTH_PARAMS': {
-            'response_type': 'code',
-        },
-        'APP': {
-            'client_id': 'amzn1.application-oa2-client.d90e75a710214f2496e5d8640376b631',
-            'secret': 'ce2040d0b98de6bbda570783c10ef6f35095a13c6870a5ca19a96885581ea3a1',
-        },
+# SITE_ID = 1
+OAUTH2_PROVIDER = {
+    'PKCE_REQUIRED': False,
+    'SCOPES': {
+        'alexa': 'Access to Alexa skill',
     },
-    # 'google': {
-    #     'SCOPE': ['profile'],
-    #     'AUTH_PARAMS': {
-    #         'access_type': 'offline',
-    #     },
-    #     'APP': {
-    #         'client_id': 'CLIENT_ID',
-    #         'secret': 'CLIENT_SECRET',
-    #     },
-    # },
+    'GRANT_TYPES': {
+        'authorization_code': ['authorization_code'],
+    },
+    'ALLOWED_GRANT_TYPES': (
+        'authorization_code',
+        'client_credentials',
+        'password',
+        'refresh_token',
+    ),
 }
+
+# SOCIALACCOUNT_PROVIDERS = {
+#     'amazon': {
+#         'SCOPE': ['profile'],
+#         'AUTH_PARAMS': {
+#             'response_type': 'code',
+#         },
+#         'APP': {
+#             'client_id': 'amzn1.application-oa2-client.d90e75a710214f2496e5d8640376b631',
+#             'secret': 'ce2040d0b98de6bbda570783c10ef6f35095a13c6870a5ca19a96885581ea3a1',
+#         },
+#     },
+#     # 'google': {
+#     #     'SCOPE': ['profile'],
+#     #     'AUTH_PARAMS': {
+#     #         'access_type': 'offline',
+#     #     },
+#     #     'APP': {
+#     #         'client_id': 'CLIENT_ID',
+#     #         'secret': 'CLIENT_SECRET',
+#     #     },
+#     # },
+# }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -155,3 +171,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'core.User'
+LOGIN_URL = '/admin/login/'

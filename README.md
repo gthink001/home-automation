@@ -7,7 +7,15 @@ Email address: viraj.megrut@gmail.com
 #viraz@171198
 
 
-http://127.0.0.1:8000/o/authorize/?client_id=1BmHnKQqFJhWE1ATtX67rx8CNrcSsNpc0XeCQsI4&response_type=code&redirect_uri=http://localhost:8000/callback&state=YOUR_STATE_VALUE&scope=alexa
+Client id django app
+1BmHnKQqFJhWE1ATtX67rx8CNrcSsNpc0XeCQsI4
+
+Secret django app
+jQriMFeTrMAJtdfUsUGptjWBrMMTYptfc29V0epnZq5UjREvxEkm5PH8tZ2yQsonfI44zoT3XZtQdaMa2GkDxq5vj97AQXkHRXPg1KoB6k0glVOEjXu1zQImV1WYkvYF
+
+
+
+http://127.0.0.1:8000/o/authorize/?client_id=1BmHnKQqFJhWE1ATtX67rx8CNrcSsNpc0XeCQsI4&response_type=code&redirect_uri=http://localhost:8000/callback&state=local&scope=alexa
 
 code=KWL6OrTRFFkwcUvxmJ02zXG4hgwhmu
 

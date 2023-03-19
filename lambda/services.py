@@ -1,21 +1,21 @@
 
 SAMPLE_APPLIANCES = [
+    # {
+    #     "applianceId": "C44F330C30A5T1",
+    #     "manufacturerName": "G-Think",
+    #     "modelName": "Switch",
+    #     "version": "1",
+    #     "friendlyName": "Switch",
+    #     "friendlyDescription": "001 Switch that can only be turned on/off",
+    #     "isReachable": True,
+    #     "actions": [
+    #         "turnOn",
+    #         "turnOff"
+    #     ],
+    #     "additionalApplianceDetails": {
+    #     }
+    # },
     {
-        "applianceId": "C44F330C30A5T1",
-        "manufacturerName": "G-Think",
-        "modelName": "Switch",
-        "version": "1",
-        "friendlyName": "Switch",
-        "friendlyDescription": "001 Switch that can only be turned on/off",
-        "isReachable": True,
-        "actions": [
-            "turnOn",
-            "turnOff"
-        ],
-        "additionalApplianceDetails": {
-        }
-    },
- {
         "applianceId": "840D8ED6A060F1",
         "manufacturerName": "G-Think",
         "modelName": "Fan",
@@ -150,13 +150,16 @@ def get_endpoint_from_appliance(appliance):
 
 def fetch_appliance_state_service(endpoint_id, namespace, name):
     if name == "powerState":
-        return "ON"
+        return "ON" / "OFF"
     
     if name == "percentage":
         return 45
 
 
-def set_device_state_service(endpoint_id, state, value):
+def set_fan_speed_service(endpoint_id, state, value):
+    return 50
+
+def set_switch_state_service(endpoint_id, state, value):
     """
     call django api to set on off 
     """

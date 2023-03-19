@@ -1,6 +1,6 @@
 from alexa_response import AlexaResponse
 from validation import validate_message
-from services import fetch_appliances_service, set_device_state_service, fetch_appliance_state_service
+from services import *
 from utils import get_name_from_capability
 
 import logging
@@ -58,7 +58,7 @@ def lambda_handler(request, context):
         if namespace == 'Alexa.Discovery':
             if name == 'Discover':
                 adr = AlexaResponse(namespace='Alexa.Discovery', name='Discover.Response')
-                adr.set_payload_endpoint = fetch_appliances_service()
+                adr.set_payload_endpoint(fetch_appliances_service())
                 return send_response(adr.get())
 
 
@@ -98,7 +98,7 @@ def lambda_handler(request, context):
             correlation_token = request['directive']['header']['correlationToken']
 
             # Check for an error when setting the state
-            state_set = set_device_state(endpoint_id=endpoint_id, state='powerState', value=power_state_value)
+            state_set = set_switch_state_service(endpoint_id=endpoint_id, state='powerState', value=power_state_value)
             if not state_set:
                 return AlexaResponse(
                     name='ErrorResponse',
@@ -109,24 +109,35 @@ def lambda_handler(request, context):
             return send_response(apcr.get())
 
 
-        # if namespace == 'Alexa.PowerController':
-        #     # Note: This sample always returns a success response for either a request to TurnOff or TurnOn
-        #     endpoint_id = request['directive']['endpoint']['endpointId']
-        #     power_state_value = 'OFF' if name == 'TurnOff' else 'ON'
-        #     correlation_token = request['directive']['header']['correlationToken']
+        if namespace == 'Alexa.PercentageController':
+            endpoint_id = request['directive']['endpoint']['endpointId']
+            correlation_token = request['directive']['header']['correlationToken']
 
-        #     # Check for an error when setting the state
-        #     state_set = set_device_state_service(endpoint_id=endpoint_id, state='powerState', value=power_state_value)
-        #     if not state_set:
-        #         return AlexaResponse(
-        #             name='ErrorResponse',
-        #             payload={'type': 'ENDPOINT_UNREACHABLE', 'message': 'Unable to reach endpoint.'}).get()
+            if name == 'SetPercentage':
+                fan_speed_value = request['directive']['payload']['percentage']
+            elif name == 'AdjustPercentage':
+                fan_speed_value = fetch_fan_speed_service(endpoint_id=endpoint_id)
+                fan_speed_value += request['directive']['payload']['percentageDelta']
+                fan_speed_value = max(min(fan_speed_value, 100), 0)
 
-        #     apcr = AlexaResponse(correlation_token=correlation_token)
-        #     apcr.add_context_property(namespace='Alexa.PowerController', name='powerState', value=power_state_value)
-        #     return send_response(apcr.get())
+            # Check for an error when setting the state
+            state_set = set_fan_speed_service(endpoint_id=endpoint_id, state='percentage', value=fan_speed_value)
+            if not state_set:
+                return AlexaResponse(
+                    name='ErrorResponse',
+                    payload={'type': 'ENDPOINT_UNREACHABLE', 'message': 'Unable to reach endpoint database.'}).get()
 
-    except Exception() as error:
+            apcr = AlexaResponse(correlation_token=correlation_token)
+            apcr.add_context_property(
+                namespace='Alexa.PercentageController', 
+                name='percentage', 
+                value=fan_speed_value, 
+                uncertainty_in_milliseconds=500
+            )
+            return send_response(apcr.get())
+
+
+    except Exception as error:
         logger.error(error)
         raise
 

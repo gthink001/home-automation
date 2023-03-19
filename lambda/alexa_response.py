@@ -1,7 +1,11 @@
 import random
 import uuid
 
-from .alexa_utils import get_utc_timestamp
+import time
+
+def get_utc_timestamp(seconds=None):
+    return time.strftime("%Y-%m-%dT%H:%M:%S.00Z", time.gmtime(seconds))
+
 
 
 class AlexaResponse:

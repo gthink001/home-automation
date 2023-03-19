@@ -43,6 +43,7 @@ def lambda_handler(request, context):
 
         name = request['directive']['header']['name']
         namespace = request['directive']['header']['namespace']
+        access_token = request['directive'].get('endpoint', {}).get('scope', {}).get('token')
 
 
         if namespace == 'Alexa.Authorization':
@@ -58,7 +59,7 @@ def lambda_handler(request, context):
         if namespace == 'Alexa.Discovery':
             if name == 'Discover':
                 adr = AlexaResponse(namespace='Alexa.Discovery', name='Discover.Response')
-                adr.set_payload_endpoint(fetch_appliances_service())
+                adr.set_payload_endpoint(fetch_appliances_service(access_token=access_token))
                 return send_response(adr.get())
 
 
@@ -67,7 +68,7 @@ def lambda_handler(request, context):
                 endpoint_id = request['directive']['endpoint']['endpointId']
                 correlation_token = request['directive']['header']['correlationToken']
                 
-                appliances = fetch_appliances_service()
+                appliances = fetch_appliances_service(access_token)
                 
                 for appliance in appliances:
                     if not appliance["endpointId"] == endpoint_id:
@@ -77,8 +78,13 @@ def lambda_handler(request, context):
                     capabilities = appliance.get("capabilities", [])
                     for capability in capabilities:
                         namespace = capability.get("interface")
-                        name = get_name_from_capability.get(capability)
-                        value = fetch_appliance_state_service(endpoint_id=endpoint_id, namespace=namespace, name=name)
+                        name = get_name_from_capability(capability)
+                        value = fetch_appliance_state_service(
+                            endpoint_id=endpoint_id, 
+                            access_token=access_token, 
+                            namespace=namespace, 
+                            name=name
+                        )
 
                         # Check for an error when getting the state
                         if value is None:
@@ -98,7 +104,13 @@ def lambda_handler(request, context):
             correlation_token = request['directive']['header']['correlationToken']
 
             # Check for an error when setting the state
-            state_set = set_switch_state_service(endpoint_id=endpoint_id, state='powerState', value=power_state_value)
+            state_set = set_switch_state_service(
+                endpoint_id=endpoint_id, 
+                access_token=access_token, 
+                state='powerState', 
+                value=power_state_value
+            )
+
             if not state_set:
                 return AlexaResponse(
                     name='ErrorResponse',
@@ -108,7 +120,6 @@ def lambda_handler(request, context):
             apcr.add_context_property(namespace='Alexa.PowerController', name='powerState', value=power_state_value)
             return send_response(apcr.get())
 
-
         if namespace == 'Alexa.PercentageController':
             endpoint_id = request['directive']['endpoint']['endpointId']
             correlation_token = request['directive']['header']['correlationToken']
@@ -116,7 +127,9 @@ def lambda_handler(request, context):
             if name == 'SetPercentage':
                 fan_speed_value = request['directive']['payload']['percentage']
             elif name == 'AdjustPercentage':
-                fan_speed_value = fetch_fan_speed_service(endpoint_id=endpoint_id)
+                fan_speed_value = fetch_appliance_state_service(
+                    endpoint_id=endpoint_id, namespace=namespace, access_token=access_token
+                )
                 fan_speed_value += request['directive']['payload']['percentageDelta']
                 fan_speed_value = max(min(fan_speed_value, 100), 0)
 

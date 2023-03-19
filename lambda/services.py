@@ -1,175 +1,57 @@
+import requests
+from utils import get_endpoint_from_appliance
 
-SAMPLE_APPLIANCES = [
-    # {
-    #     "applianceId": "C44F330C30A5T1",
-    #     "manufacturerName": "G-Think",
-    #     "modelName": "Switch",
-    #     "version": "1",
-    #     "friendlyName": "Switch",
-    #     "friendlyDescription": "001 Switch that can only be turned on/off",
-    #     "isReachable": True,
-    #     "actions": [
-    #         "turnOn",
-    #         "turnOff"
-    #     ],
-    #     "additionalApplianceDetails": {
-    #     }
-    # },
-    {
-        "applianceId": "840D8ED6A060F1",
-        "manufacturerName": "G-Think",
-        "modelName": "Fan",
-        "version": "1",
-        "friendlyName": "Fan",
-        "friendlyDescription": "002 fan",
-        "isReachable": True,
-        "actions": [
-            "setPercentage"
-        ],
-        "additionalApplianceDetails": {}
-    }
-]
+BACKEND_BASE_URL = "https://af15-2405-201-2003-c828-16e8-7e68-3c7e-e7a4.in.ngrok.io"
 
 
-def fetch_appliances_from_api():
-    """
-    call django api here
-    """
-    return SAMPLE_APPLIANCES
 
-
-def fetch_appliances_service():
+def fetch_appliances_service(access_token):
     endpoints = []
-    appliances = fetch_appliances_from_api()
+    
+    url = "{}/lambda/get_appliances".format(BACKEND_BASE_URL)
+    headers = {'Authorization': f'Bearer {access_token}'}
+    response = requests.get(url, headers=headers)
+
+    if not response.status_code == 200:
+        logger.info("fetch_appliances_service response.status_code is not 200")
+        return endpoints
+   
+    appliances = response.json()
     for appliance in appliances:
         endpoints.append(get_endpoint_from_appliance(appliance))
     return endpoints
 
 
-def get_appliance_by_appliance_id(appliance_id):
-    for appliance in SAMPLE_APPLIANCES:
-        if appliance["applianceId"] == appliance_id:
-            return appliance
-    return None
 
-def get_endpoint_from_appliance(appliance):
-
-    def _get_display_categories(appliance):
-        model_name = appliance["modelName"]
-        if model_name == "Switch": displayCategories = ["SWITCH"]
-        elif model_name == "Fan": displayCategories = ["FAN"]
-        else: displayCategories = ["OTHER"]
-        return displayCategories
-
-    def _get_capabilities(appliance):
-        model_name = appliance["modelName"]
-        if model_name == 'Switch':
-            capabilities = [
-                {
-                    "type": "AlexaInterface",
-                    "interface": "Alexa.PowerController",
-                    "version": "3",
-                    "properties": {
-                        "supported": [
-                            { "name": "powerState" }
-                        ],
-                        "proactivelyReported": True,
-                        "retrievable": True
-                    }
-                }
-            ]
-
-        elif model_name == 'Fan':
-            capabilities = [
-                {
-                    "type": "AlexaInterface",
-                    "interface": "Alexa.PercentageController",
-                    "version": "3",
-                    "properties": {
-                        "supported": [
-                            { "name": "percentage" }
-                        ],
-                        "proactivelyReported": True,
-                        "retrievable": True
-                    }
-                }
-            ]
-
-        else:
-            # in this example, just return simple on/off capability
-            capabilities = [
-                {
-                    "type": "AlexaInterface",
-                    "interface": "Alexa.PowerController",
-                    "version": "3",
-                    "properties": {
-                        "supported": [
-                            { "name": "powerState" }
-                        ],
-                        "proactivelyReported": True,
-                        "retrievable": True
-                    }
-                }
-            ]
-
-        # additional capabilities that are required for each endpoint
-        endpoint_health_capability = {
-            "type": "AlexaInterface",
-            "interface": "Alexa.EndpointHealth",
-            "version": "3",
-            "properties": {
-                "supported":[
-                    { "name":"connectivity" }
-                ],
-                "proactivelyReported": True,
-                "retrievable": True
-            }
-        }
-        alexa_interface_capability = {
-            "type": "AlexaInterface",
-            "interface": "Alexa",
-            "version": "3"
-        }
-        capabilities.append(endpoint_health_capability)
-        capabilities.append(alexa_interface_capability)
-        return capabilities
-
-    endpoint = {
-        "endpointId": appliance["applianceId"],
-        "manufacturerName": appliance["manufacturerName"],
-        "friendlyName": appliance["friendlyName"],
-        "description": appliance["friendlyDescription"],
-        "displayCategories": [],
-        "cookie": appliance["additionalApplianceDetails"],
-        "capabilities": []
-    }
-    endpoint["displayCategories"] = _get_display_categories(appliance)
-    endpoint["capabilities"] = _get_capabilities(appliance)
-    return endpoint
-
-
-def fetch_appliance_state_service(endpoint_id, namespace, name):
+def fetch_appliance_state_service(endpoint_id, access_token, namespace=None, name=None):
     if name == "powerState":
-        return "ON" / "OFF"
+        # url = "{}/lambda/get_switch_state{}".format(BACKEND_BASE_URL, endpoint_id)
+        # headers = {'Authorization': f'Bearer {access_token}'}
+        # response = requests.get(url, headers=headers)
+
+        # if not response.status_code == 200:
+        #     logger.info("fetch_appliances_service response.status_code is not 200")
+        #     return None
+        # return response.json()
+        return "ON"
     
-    if name == "percentage":
-        return 45
+    if namespace == 'Alexa.PercentageController':
+        # url = "{}/lambda/get_fan_speed{}".format(BACKEND_BASE_URL, endpoint_id)
+        # headers = {'Authorization': f'Bearer {access_token}'}
+        # response = requests.get(url, headers=headers)
 
+        # if not response.status_code == 200:
+        #     logger.info("fetch_appliances_service response.status_code is not 200")
+        #     return None
+        return 50
+    
 
-def set_fan_speed_service(endpoint_id, state, value):
+def set_fan_speed_service(endpoint_id, access_token, state, value):
     return 50
 
-def set_switch_state_service(endpoint_id, state, value):
+
+def set_switch_state_service(endpoint_id, access_token, state, value):
     """
     call django api to set on off 
     """
-    # attribute_key = state + 'Value'
-    # response = aws_dynamodb.update_item(
-    #     TableName='SampleSmartHome',
-    #     Key={'ItemId': {'S': endpoint_id}},
-    #     AttributeUpdates={attribute_key: {'Action': 'PUT', 'Value': {'S': value}}})
-    # print(response)
-    # if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-    #     return True
-    # else:
     return True

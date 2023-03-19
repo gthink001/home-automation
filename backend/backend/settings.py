@@ -69,6 +69,11 @@ OAUTH2_PROVIDER = {
     ),
 }
 
+AUTHENTICATION_BACKENDS = (
+    'oauth2_provider.backends.OAuth2Backend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 # SOCIALACCOUNT_PROVIDERS = {
 #     'amazon': {
 #         'SCOPE': ['profile'],
@@ -100,6 +105,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware'
 ]
 
 ROOT_URLCONF = 'backend.urls'

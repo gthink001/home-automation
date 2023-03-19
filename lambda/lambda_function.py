@@ -1,5 +1,5 @@
 from alexa_response import AlexaResponse
-from validation import validate_message
+#from validation import validate_message
 from services import *
 from utils import get_name_from_capability
 
@@ -43,8 +43,15 @@ def lambda_handler(request, context):
 
         name = request['directive']['header']['name']
         namespace = request['directive']['header']['namespace']
-        access_token = request['directive'].get('endpoint', {}).get('scope', {}).get('token')
+        access_token = None
 
+        if 'scope' in request['directive'].get('payload', {}):
+            access_token = request['directive']['payload']['scope'].get('token')
+        elif 'scope' in request['directive'].get('endpoint', {}):
+            access_token = request['directive']['endpoint']['scope'].get('token')
+
+        if access_token is None:
+            logger.warning("Access token not found in the request.")
 
         if namespace == 'Alexa.Authorization':
             if name == 'AcceptGrant':
@@ -107,7 +114,6 @@ def lambda_handler(request, context):
             state_set = set_switch_state_service(
                 endpoint_id=endpoint_id, 
                 access_token=access_token, 
-                state='powerState', 
                 value=power_state_value
             )
 
@@ -126,6 +132,7 @@ def lambda_handler(request, context):
 
             if name == 'SetPercentage':
                 fan_speed_value = request['directive']['payload']['percentage']
+            
             elif name == 'AdjustPercentage':
                 fan_speed_value = fetch_appliance_state_service(
                     endpoint_id=endpoint_id, namespace=namespace, access_token=access_token
@@ -134,7 +141,7 @@ def lambda_handler(request, context):
                 fan_speed_value = max(min(fan_speed_value, 100), 0)
 
             # Check for an error when setting the state
-            state_set = set_fan_speed_service(endpoint_id=endpoint_id, state='percentage', value=fan_speed_value)
+            state_set = set_fan_speed_service(endpoint_id=endpoint_id, value=fan_speed_value, access_token=access_token)
             if not state_set:
                 return AlexaResponse(
                     name='ErrorResponse',
@@ -148,7 +155,6 @@ def lambda_handler(request, context):
                 uncertainty_in_milliseconds=500
             )
             return send_response(apcr.get())
-
 
     except Exception as error:
         logger.error(error)

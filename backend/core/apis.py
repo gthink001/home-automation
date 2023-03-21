@@ -76,5 +76,7 @@ def get_fan_speed(request, endpoint_id):
 
 @protected_resource()
 def set_fan_speed(request, endpoint_id, speed):
+    print(speed, "speed")
+    #devide it 25 and set
     return JsonResponse({"speed": 78})
 

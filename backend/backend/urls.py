@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from core import apis
-
+from core import google_webhook
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -14,4 +14,7 @@ urlpatterns = [
     
     path('lambda/get_fan_speed/<str:endpoint_id>', apis.get_fan_speed, name='get_fan_speed'),
     path('lambda/set_fan_speed/<str:endpoint_id>/<int:speed>', apis.set_fan_speed, name='set_fan_speed'),
+
+    path('google_actions/', google_webhook.google_actions, name='google_actions'),
+
 ]

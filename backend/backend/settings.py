@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'oauth2_provider',
+    'rest_framework',
 
     # 'django.contrib.sites',
     # 'allauth',
@@ -57,6 +58,8 @@ OAUTH2_PROVIDER = {
     'PKCE_REQUIRED': False,
     'SCOPES': {
         'alexa': 'Access to Alexa skill',
+        'google': 'Access to Google skill',
+
     },
     'GRANT_TYPES': {
         'authorization_code': ['authorization_code'],
@@ -73,29 +76,6 @@ AUTHENTICATION_BACKENDS = (
     'oauth2_provider.backends.OAuth2Backend',
     'django.contrib.auth.backends.ModelBackend',
 )
-
-# SOCIALACCOUNT_PROVIDERS = {
-#     'amazon': {
-#         'SCOPE': ['profile'],
-#         'AUTH_PARAMS': {
-#             'response_type': 'code',
-#         },
-#         'APP': {
-#             'client_id': 'amzn1.application-oa2-client.d90e75a710214f2496e5d8640376b631',
-#             'secret': 'ce2040d0b98de6bbda570783c10ef6f35095a13c6870a5ca19a96885581ea3a1',
-#         },
-#     },
-#     # 'google': {
-#     #     'SCOPE': ['profile'],
-#     #     'AUTH_PARAMS': {
-#     #         'access_type': 'offline',
-#     #     },
-#     #     'APP': {
-#     #         'client_id': 'CLIENT_ID',
-#     #         'secret': 'CLIENT_SECRET',
-#     #     },
-#     # },
-# }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     # 'allauth.socialaccount.providers.amazon',
     #'allauth.socialaccount.providers.google',
 
-    "core.apps.CoreConfig"
+    "core.apps.CoreConfig",
+    "google.apps.GoogleConfig",
 ]
 
 # SITE_ID = 1
@@ -69,6 +70,15 @@ OAUTH2_PROVIDER = {
         'client_credentials',
         'password',
         'refresh_token',
+    ),
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
     ),
 }
 
@@ -163,3 +173,26 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'core.User'
 LOGIN_URL = '/admin/login/'
+
+#backend base url is url of backend server
+BACKEND_BASE_URL = 'https://af15-2405-201-2003-c828-16e8-7e68-3c7e-e7a4.in.ngrok.io'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'oauth2_provider': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
+}

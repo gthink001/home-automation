@@ -33,7 +33,8 @@ def get_appliances(request):
                 "setPercentage"
             ],
             "additionalApplianceDetails": {}
-        },
+        }
+        
     ]
     return JsonResponse(appliances, safe=False)
 

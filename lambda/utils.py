@@ -53,20 +53,72 @@ def get_endpoint_from_appliance(appliance):
                 }
             ]
 
+        # elif model_name == 'Fan':
+        #     capabilities = [
+        #         {
+        #             "type": "AlexaInterface",
+        #             "interface": "Alexa.PercentageController",
+        #             "version": "3",
+        #             "properties": {
+        #                 "supported": [
+        #                     { "name": "percentage" }
+        #                 ],
+        #                 "proactivelyReported": True,
+        #                 "retrievable": True
+        #             }
+        #         }
+        #     ]
+
         elif model_name == 'Fan':
             capabilities = [
                 {
-                    "type": "AlexaInterface",
-                    "interface": "Alexa.PercentageController",
-                    "version": "3",
-                    "properties": {
-                        "supported": [
-                            { "name": "percentage" }
-                        ],
-                        "proactivelyReported": True,
-                        "retrievable": True
-                    }
+                "type": "AlexaInterface",
+                "interface": "Alexa.RangeController",
+                "version": "3",
+                "instance": "Fan.Speed",
+                "properties": {
+                    "supported": [
+                        {
+                            "name": "rangeValue"
+                        }
+                    ],
+                    "proactivelyReported": True,
+                    "retrievable": True
+                },
+                "capabilityResources": {
+                    "friendlyNames": [
+                        {
+                            "@type": "text",
+                            "value": {
+                                "text": "Fan speed",
+                                "locale": "en-IN"
+                            }
+                        }
+                    ]
+                },
+                "configuration": {
+                    "supportedRange": {
+                        "minimumValue": 0,
+                        "maximumValue": 100,
+                        "precision": 1
+                    },
+                    "unitOfMeasure": "Alexa.Unit.Percent"
                 }
+            },
+            {
+              "type": "AlexaInterface",
+              "interface": "Alexa.PowerController",
+              "version": "3",
+              "properties": {
+                "supported": [
+                  {
+                    "name": "powerState"
+                  }
+                ],
+                "proactivelyReported": True,
+                "retrievable": True
+              }
+            }
             ]
 
         else:

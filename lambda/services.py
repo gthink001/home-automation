@@ -19,7 +19,7 @@ def fetch_appliances_service(access_token):
     if not response.status_code == 200:
         logger.info("fetch_appliances_service response.status_code is not 200")
         return endpoints
-   
+
     appliances = response.json()
     for appliance in appliances:
         endpoints.append(get_endpoint_from_appliance(appliance))
@@ -47,6 +47,17 @@ def fetch_appliance_state_service(endpoint_id, access_token, namespace=None, nam
             logger.info("fetch_appliances_service response.status_code is not 200")
             return None
         return response.json()["speed"]
+
+    if namespace == 'Alexa.RangeController':
+        url = "{}/lambda/get_fan_speed/{}".format(BACKEND_BASE_URL, endpoint_id)
+        headers = {'Authorization': f'Bearer {access_token}'}
+        response = requests.get(url, headers=headers)
+
+        if not response.status_code == 200:
+            logger.info("fetch_appliances_service response.status_code is not 200")
+            return None
+        return response.json()["speed"]
+    
     
 
 def set_fan_speed_service(endpoint_id, access_token, value):

@@ -156,6 +156,35 @@ def lambda_handler(request, context):
             )
             return send_response(apcr.get())
 
+        if namespace == 'Alexa.RangeController':
+            if name == 'SetRangeValue':
+                fan_speed_value = request['directive']['payload']['rangeValue']
+            elif name == 'AdjustRangeValue':
+                current_range_value = fetch_appliance_state_service(
+                    endpoint_id=endpoint_id, namespace=namespace, access_token=access_token, name='rangeValue'
+                )
+                fan_speed_value = current_range_value + request['directive']['payload']['rangeValueDelta']
+
+            # Constrain the value between 0 and 100, and apply it for both cases
+            fan_speed_value = max(min(fan_speed_value, 100), 0)
+
+            # Check for an error when setting the state
+            state_set = set_fan_speed_service(endpoint_id=endpoint_id, value=fan_speed_value, access_token=access_token)
+            if not state_set:
+                return AlexaResponse(
+                    name='ErrorResponse',
+                    payload={'type': 'ENDPOINT_UNREACHABLE', 'message': 'Unable to reach endpoint database.'}).get()
+
+            apcr = AlexaResponse(correlation_token=correlation_token)
+            apcr.add_context_property(
+                namespace='Alexa.RangeController', 
+                name='rangeValue', 
+                value=fan_speed_value, 
+                uncertainty_in_milliseconds=500
+            )
+            return send_response(apcr.get())
+
+
     except Exception as error:
         logger.error(error)
         raise

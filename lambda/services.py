@@ -1,7 +1,7 @@
 import requests
 from utils import get_endpoint_from_appliance
 
-BACKEND_BASE_URL = "https://af15-2405-201-2003-c828-16e8-7e68-3c7e-e7a4.in.ngrok.io"
+BACKEND_BASE_URL = "https://5600-2405-201-2003-c828-4ac0-9e5-ab27-43c7.in.ngrok.io"
 
 import logging
 
@@ -52,7 +52,6 @@ def fetch_appliance_state_service(endpoint_id, access_token, namespace=None, nam
         url = "{}/lambda/get_fan_speed/{}".format(BACKEND_BASE_URL, endpoint_id)
         headers = {'Authorization': f'Bearer {access_token}'}
         response = requests.get(url, headers=headers)
-
         if not response.status_code == 200:
             logger.info("fetch_appliances_service response.status_code is not 200")
             return None

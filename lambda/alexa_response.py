@@ -36,7 +36,7 @@ class AlexaResponse:
         }
 
         if 'correlation_token' in kwargs:
-            self.event['header']['correlation_token'] = kwargs.get('correlation_token', 'INVALID')
+            self.event['header']['correlationToken'] = kwargs.get('correlation_token', 'INVALID')
 
         if 'cookie' in kwargs:
             self.event['endpoint']['cookie'] = kwargs.get('cookie', '{}')

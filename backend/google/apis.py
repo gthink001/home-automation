@@ -15,6 +15,7 @@ def google_actions(request):
     try:
         request_data = request.data
         print(request_data)
+        print("\n")
         intent = request_data['inputs'][0]['intent']
 
         if intent == 'action.devices.SYNC':
@@ -79,6 +80,7 @@ def sync():
         },
     }
     print(response_data, "response_data")
+    print("\n")
     return JsonResponse(response_data)
 
 
@@ -100,14 +102,17 @@ def query(request_data):
 
             if state is not None:
                 query_results[device_id] = {
+                    "status": "SUCCESS",
                     "online": True,
                     "on": state
                 }
         
         elif device_id == "840D8ED6A060F1":
             query_results[device_id] = {
+                "status": "SUCCESS",
                 "online": True,
-                "currentFanSpeedPercent": 50
+                "on": True,
+                "currentFanSpeedSetting": 30
             }
 
     response_data = {
@@ -117,6 +122,7 @@ def query(request_data):
         }
     }
     print(response_data, "response_data")
+    print("\n")
     return JsonResponse(response_data)
 
 
@@ -147,7 +153,7 @@ def execute(request_data):
                     }
                 })
                     
-            elif execution["command"] == "action.devices.commands.SetFanSpeedPercent":
+            elif execution["command"] == "action.devices.commands.SetFanSpeed":
                 new_speed = execution["params"]["fanSpeedPercent"]
                 #make a request to change fan speed
                 if new_speed is not None:
@@ -192,11 +198,15 @@ def get_endpoint_from_appliance(appliance):
         return {
             "id": appliance["applianceId"],
             "type": "action.devices.types.FAN",
-            "traits": ["action.devices.traits.FanSpeed"],
-            "name": {"defaultNames": [appliance["friendlyName"]], "name": appliance["friendlyName"]},
+            "traits": [
+                "action.devices.traits.FanSpeed",
+                # "action.devices.traits.OnOff"
+            ],
+            "name": {"name": appliance["friendlyName"]},
             "willReportState": appliance["isReachable"],
             "attributes": {
-                "action.devices.traits.FanSpeed.supportedRanges": [
+                "supportsFanSpeedPercent": True,
+                "availableFanSpeedPercentRanges": [
                     {
                         "minPercentSpeed": 0,
                         "maxPercentSpeed": 100,
@@ -204,9 +214,18 @@ def get_endpoint_from_appliance(appliance):
                         "ordered": True
                     }
                 ],
-                "reversible": False
+                "reversible": False,
+                "commandOnlyFanSpeed": False
+            },
+            "deviceInfo": {
+            "manufacturer": "g-think",
+            "model": "hs1234",
+            "hwVersion": "3.2",
+            "swVersion": "11.4"
             }
+
         }
+
     else:
         return None
     

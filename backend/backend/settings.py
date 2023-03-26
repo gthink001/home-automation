@@ -28,10 +28,12 @@ DEBUG = True
 ALLOWED_HOSTS = [   
     'localhost', '*.ngrok.io', 'af15-2405-201-2003-c828-16e8-7e68-3c7e-e7a4.in.ngrok.io',
     'https://5600-2405-201-2003-c828-4ac0-9e5-ab27-43c7.in.ngrok.io',
-    '5600-2405-201-2003-c828-4ac0-9e5-ab27-43c7.in.ngrok.io'
+    '5600-2405-201-2003-c828-4ac0-9e5-ab27-43c7.in.ngrok.io',
+    'f2a1-2405-201-2003-c828-adc5-ee8e-1f1c-dd51.in.ngrok.io'
 ]
 CSRF_TRUSTED_ORIGINS = ['https://af15-2405-201-2003-c828-16e8-7e68-3c7e-e7a4.in.ngrok.io',
-                        'https://5600-2405-201-2003-c828-4ac0-9e5-ab27-43c7.in.ngrok.io']
+                        'https://5600-2405-201-2003-c828-4ac0-9e5-ab27-43c7.in.ngrok.io',
+                        'https://f2a1-2405-201-2003-c828-adc5-ee8e-1f1c-dd51.in.ngrok.io']
 
 # Application definition
 

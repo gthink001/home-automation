@@ -105,20 +105,20 @@ def get_endpoint_from_appliance(appliance):
                     "unitOfMeasure": "Alexa.Unit.Percent"
                 }
             },
-            {
-              "type": "AlexaInterface",
-              "interface": "Alexa.PowerController",
-              "version": "3",
-              "properties": {
-                "supported": [
-                  {
-                    "name": "powerState"
-                  }
-                ],
-                "proactivelyReported": True,
-                "retrievable": True
-              }
-            }
+            # {
+            #   "type": "AlexaInterface",
+            #   "interface": "Alexa.PowerController",
+            #   "version": "3",
+            #   "properties": {
+            #     "supported": [
+            #       {
+            #         "name": "powerState"
+            #       }
+            #     ],
+            #     "proactivelyReported": True,
+            #     "retrievable": True
+            #   }
+            # }
             ]
 
         else:
